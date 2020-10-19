@@ -3,4 +3,5 @@
        xmlns="http://www.springframework.org/schema/beans"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
        default-autowire="constructor">
+    <bean id="sccacheBuildFeature" class="org.jetbrains.teamcity.sccache.SCCacheBuildFeature"/>
 </beans>
