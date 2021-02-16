@@ -32,6 +32,7 @@ teamcity {
                 useSeparateClassloader = true
             }
         }
+        archiveName = "teamcity-sccache-plugin.zip"
     }
 }
 
