@@ -100,8 +100,6 @@ class SCCacheBuildFeature(dispatcher: EventDispatcher<AgentLifeCycleListener>) :
             }
 
             runningBuild.addSharedEnvironmentVariable(AgentEnvironment.SCCACHE_SERVER_PORT, settings.port.toString())
-            runningBuild.addSharedEnvironmentVariable(AgentEnvironment.RUSTC_WRAPPER, "%" + SCCacheConstants.AGENT_SCCACHE_PATH_PARAMETER + "%")
-            logger.message("${AgentEnvironment.RUSTC_WRAPPER} environment variable was added")
         }
     }
 
