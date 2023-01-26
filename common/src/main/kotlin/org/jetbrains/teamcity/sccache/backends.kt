@@ -28,6 +28,7 @@ interface BackendConfig {
 
 class S3BackendConfig(
         val bucket: String = "",
+        val prefix: String = "",
         val iamCredentialsUrl: String = "",
         val accessKey: String = "",
         val secretKey: String = "",
@@ -36,6 +37,7 @@ class S3BackendConfig(
 ) : BackendConfig {
     constructor(map: Map<String, String>) : this(
             map[S3Backend.BUCKET] ?: "",
+            map[S3Backend.PREFIX] ?: "",
             map[S3Backend.IAM_CREDENTIALS_URL] ?: "",
             map[S3Backend.ACCESS_KEY] ?: "",
             map[S3Backend.SECRET_KEY] ?: "",
@@ -50,6 +52,9 @@ class S3BackendConfig(
     override fun getEnv(): Map<String, String> {
         val env = HashMap<String, String>()
         env["SCCACHE_BUCKET"] = bucket
+        if (prefix.isNotEmpty()) {
+            env["SCCACHE_S3_KEY_PREFIX"] = prefix
+        }
         if (endpoint.isNotEmpty()) {
             env["SCCACHE_ENDPOINT"] = endpoint
         }
@@ -85,6 +90,9 @@ class S3BackendConfig(
                 append("Endpoint: $endpoint, ")
             }
             append("Bucket: $bucket")
+            if (prefix.isNotEmpty()) {
+                append(", Keys Prefix: $prefix")
+            }
             if (iamCredentialsUrl.isNotEmpty()) {
                 append(", IAM Credentials URL: $iamCredentialsUrl")
             } else if (accessKey.isNotEmpty()) {

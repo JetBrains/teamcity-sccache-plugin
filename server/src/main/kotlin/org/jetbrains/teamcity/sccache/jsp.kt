@@ -29,6 +29,7 @@ class SCCacheProjectFeatureJspKeys {
 
     val S3_TYPE = SCCacheConstants.ProjectFeatureSettings.S3Backend.TYPE
     val S3_BUCKET = SCCacheConstants.ProjectFeatureSettings.S3Backend.BUCKET
+    val S3_PREFIX = SCCacheConstants.ProjectFeatureSettings.S3Backend.PREFIX
     val S3_IAM_CREDENTIALS_URL = SCCacheConstants.ProjectFeatureSettings.S3Backend.IAM_CREDENTIALS_URL
     val S3_ACCESS_KEY = SCCacheConstants.ProjectFeatureSettings.S3Backend.ACCESS_KEY
     val S3_SECRET_KEY = SCCacheConstants.ProjectFeatureSettings.S3Backend.SECRET_KEY

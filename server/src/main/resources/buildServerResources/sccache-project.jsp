@@ -61,6 +61,14 @@
     </td>
 </tr>
 <tr class="backend-container backend-s3">
+    <td><label for="${keys.s3_PREFIX}">Key prefix:</label></td>
+    <td>
+        <props:textProperty name="${keys.s3_PREFIX}" className="longField textProperty_max-width js_max-width"/>
+        <span class="error" id="error_${keys.s3_PREFIX}"></span>
+        <span class="smallNote"></span>
+    </td>
+</tr>
+<tr class="backend-container backend-s3">
     <td><label for="${keys.s3_ACCESS_KEY}">Access key:</label></td>
     <td>
         <props:textProperty name="${keys.s3_ACCESS_KEY}" className="longField textProperty_max-width js_max-width"/>

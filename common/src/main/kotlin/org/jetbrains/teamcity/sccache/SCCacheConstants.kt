@@ -39,6 +39,7 @@ object SCCacheConstants {
         object S3Backend {
             val TYPE = "s3"
             val BUCKET = "bucket"
+            val PREFIX = "prefix"
 
             val IAM_CREDENTIALS_URL = "iam_credentials_url"
             val ACCESS_KEY = "access_key"
