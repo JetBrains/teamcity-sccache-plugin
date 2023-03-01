@@ -16,8 +16,8 @@
 apply plugin: 'java'
 apply plugin: 'kotlin'
 
-apply plugin: 'com.github.rodm.teamcity-server'
-apply plugin: 'com.github.rodm.teamcity-environments'
+apply plugin: 'io.github.rodm.teamcity-server'
+apply plugin: 'io.github.rodm.teamcity-environments'
 
 ext {
     downloadsDir = project.findProperty('downloads.dir') ?: "$rootDir/downloads"
