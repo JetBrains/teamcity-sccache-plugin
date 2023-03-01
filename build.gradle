@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 buildscript {
-    ext.kotlin_version = '1.4.10'
+    ext.kotlin_version = '1.7.22'
     repositories {
         mavenLocal()
         maven {
@@ -29,13 +29,13 @@ buildscript {
 
 ext {
     version_prefix = '0.1'
-    teamcity_version = '2019.1'
+    teamcity_version = '2020.1'
     // compile
     spring_version = '4.3.12.RELEASE'
     httpclient_version = '4.3.6' // version is relevant to one used inside TeamCity
     // tests
     jetty_version = '9.4.19.v20190610'
-    testcontainers_version = '1.12.5'
+    testcontainers_version = '1.17.6'
     assertj_version = '1.7.1'
 }
 
@@ -55,13 +55,13 @@ subprojects {
     apply plugin: 'java-test-fixtures'
     apply plugin: 'kotlin'
 
-    sourceCompatibility = "1.6"
-    targetCompatibility = "1.6"
+    sourceCompatibility = "1.8"
+    targetCompatibility = "1.8"
 
     tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
-        kotlinOptions { jvmTarget = '1.6' }
-        sourceCompatibility = '1.6'
-        targetCompatibility = '1.6'
+        kotlinOptions { jvmTarget = '1.8' }
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
     }
 
     dependencies {

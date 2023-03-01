@@ -60,9 +60,9 @@ teamcity {
         baseHomeDir = project.serversDir
         baseDataDir = 'data'
 
-        TeamCity2019_1 {
-            version = '2019.1.5'
-            serverOptions = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5600 -DTC.res.disableAll=true -Dteamcity.development.mode=true"
+        TeamCity2020_1 {
+            version = '2020.1.5'
+            serverOptions = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5600 -DTC.res.disableAll=true -Dteamcity.development.mode=true -Dteamcity.superUser.token.saveToFile=true"
             agentOptions = "-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5601"
         }
     }
