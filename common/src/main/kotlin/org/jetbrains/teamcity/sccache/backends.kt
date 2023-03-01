@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2020 JetBrains s.r.o.
+ * Copyright 2000-2023 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.jetbrains.teamcity.sccache
 
 import org.jetbrains.teamcity.sccache.SCCacheConstants.ProjectFeatureSettings
 import org.jetbrains.teamcity.sccache.SCCacheConstants.ProjectFeatureSettings.S3Backend
+import java.util.*
 
 
 interface BackendConfig {
@@ -32,6 +33,7 @@ class S3BackendConfig(
         val iamCredentialsUrl: String = "",
         val accessKey: String = "",
         val secretKey: String = "",
+        val region: String = "",
         val endpoint: String = "",
         val useSSL: Boolean = true,
 ) : BackendConfig {
@@ -41,6 +43,7 @@ class S3BackendConfig(
             map[S3Backend.IAM_CREDENTIALS_URL] ?: "",
             map[S3Backend.ACCESS_KEY] ?: "",
             map[S3Backend.SECRET_KEY] ?: "",
+            map[S3Backend.REGION] ?: "",
             map[S3Backend.ENDPOINT] ?: "",
             map[S3Backend.SSL].toBoolean(),
     )
@@ -55,8 +58,16 @@ class S3BackendConfig(
         if (prefix.isNotEmpty()) {
             env["SCCACHE_S3_KEY_PREFIX"] = prefix
         }
+        if (region.isNotEmpty()) {
+            env["SCCACHE_REGION"] = region
+        }
         if (endpoint.isNotEmpty()) {
             env["SCCACHE_ENDPOINT"] = endpoint
+            if (region.isEmpty()) {
+                getAWSRegionFromEndpoint(endpoint)?.let {
+                    env["SCCACHE_REGION"] = it
+                }
+            }
         }
         if (iamCredentialsUrl.isNotEmpty()) {
             env["AWS_IAM_CREDENTIALS_URL"] = iamCredentialsUrl
@@ -90,6 +101,13 @@ class S3BackendConfig(
                 append("Endpoint: $endpoint, ")
             }
             append("Bucket: $bucket")
+            if (region.isNotEmpty()) {
+                append(", Region: $region")
+            } else if (endpoint.isNotEmpty()) {
+                getAWSRegionFromEndpoint(endpoint)?.let {
+                    append(", Detected region: $it")
+                }
+            }
             if (prefix.isNotEmpty()) {
                 append(", Keys Prefix: $prefix")
             }
@@ -108,6 +126,36 @@ class S3BackendConfig(
 
     override fun toString(): String {
         return describe()
+    }
+
+    companion object {
+        fun getAWSRegionFromEndpoint(endpoint: String): String? {
+            val value = endpoint.trim('/')
+            if (!value.endsWith("amazonaws.com")) return null
+            val split = LinkedList(value.split('.').asReversed())
+            if (split.pop() != "com") return null
+            if (split.pop() != "amazonaws") return null
+            val candidate = split.pop()
+
+            if (candidate == "s3" && split.isEmpty()) return "us-east-1" // special legacy case s3.amazonaws.com
+
+            if (!split.pop().contains("s3")) return null
+
+            val dashes = candidate.count { it == '-' }
+            // two dashes in regular regions, three in gov regions
+            if (dashes != 2 && dashes != 3) return null
+            return candidate
+
+            // s3.REGION.amazonaws.com
+            // s3-fips.REGION.amazonaws.com
+            // s3.dualstack.REGION.amazonaws.com
+            // s3-fips.dualstack.REGION.amazonaws.com
+
+            // ACCOUNT.s3-control.REGION.amazonaws.com
+            // ACCOUNT.s3-control-fips.REGION.amazonaws.com
+            // ACCOUNT.s3-control.dualstack.REGION.amazonaws.com
+            // ACCOUNT.s3-control-fips.dualstack.REGION.amazonaws.com
+        }
     }
 }
 

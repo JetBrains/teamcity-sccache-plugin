@@ -46,6 +46,7 @@ object SCCacheConstants {
             val ACCESS_KEY = "access_key"
             val SECRET_KEY = "secure:secret_key"
 
+            val REGION = "region"
             val ENDPOINT = "endpoint"
             val SSL = "ssl"
         }

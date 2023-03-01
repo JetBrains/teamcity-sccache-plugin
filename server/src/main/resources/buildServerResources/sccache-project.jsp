@@ -1,8 +1,5 @@
-<%--suppress XmlPathReference --%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ include file="/include-internal.jsp" %>
 <%--
-  ~ Copyright 2000-2020 JetBrains s.r.o.
+  ~ Copyright 2000-2023 JetBrains s.r.o.
   ~
   ~ Licensed under the Apache License, Version 2.0 (the "License");
   ~ you may not use this file except in compliance with the License.
@@ -16,6 +13,10 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   --%>
+
+<%--suppress XmlPathReference --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ include file="/include-internal.jsp" %>
 <jsp:useBean id="keys" class="org.jetbrains.teamcity.sccache.SCCacheProjectFeatureJspKeys"/>
 
 <jsp:useBean id="project" type="jetbrains.buildServer.serverSide.SProject" scope="request"/>
@@ -58,6 +59,14 @@
         <props:textProperty name="${keys.s3_BUCKET}" className="longField textProperty_max-width js_max-width"/>
         <span class="error" id="error_${keys.s3_BUCKET}"></span>
         <span class="smallNote"></span>
+    </td>
+</tr>
+<tr class="backend-container backend-s3 advancedSetting">
+    <td><label for="${keys.s3_REGION}">Region:</label></td>
+    <td>
+        <props:textProperty name="${keys.s3_REGION}" className="longField textProperty_max-width js_max-width"/>
+        <span class="error" id="error_${keys.s3_REGION}"></span>
+        <span class="smallNote">E.g. 'eu-west-1'</span>
     </td>
 </tr>
 <tr class="backend-container backend-s3">

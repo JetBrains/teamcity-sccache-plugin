@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2020 JetBrains s.r.o.
+ * Copyright 2000-2023 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ class SCCacheProjectFeatureJspKeys {
     val S3_IAM_CREDENTIALS_URL = SCCacheConstants.ProjectFeatureSettings.S3Backend.IAM_CREDENTIALS_URL
     val S3_ACCESS_KEY = SCCacheConstants.ProjectFeatureSettings.S3Backend.ACCESS_KEY
     val S3_SECRET_KEY = SCCacheConstants.ProjectFeatureSettings.S3Backend.SECRET_KEY
+    val S3_REGION = SCCacheConstants.ProjectFeatureSettings.S3Backend.REGION
     val S3_ENDPOINT = SCCacheConstants.ProjectFeatureSettings.S3Backend.ENDPOINT
     val S3_SSL = SCCacheConstants.ProjectFeatureSettings.S3Backend.SSL
 }
