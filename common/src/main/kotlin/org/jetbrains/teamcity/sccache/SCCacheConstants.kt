@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2020 JetBrains s.r.o.
+ * Copyright 2000-2023 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.jetbrains.teamcity.sccache
 @Suppress("MayBeConstant")
 object SCCacheConstants {
     val AGENT_SCCACHE_PATH_PARAMETER = "sccache.path"
+    val SCCACHE_SERVER_LOGGING_LEVEL = "sccache.logging.level"
 
     object BuildFeatureSettings {
         val FEATURE_TYPE = "teamcity-sccache"

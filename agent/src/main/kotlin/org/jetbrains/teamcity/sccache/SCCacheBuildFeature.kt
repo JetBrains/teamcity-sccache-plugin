@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2020 JetBrains s.r.o.
+ * Copyright 2000-2023 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.jetbrains.teamcity.sccache.SCCacheConstants.BuildFeatureSettings
 import java.io.File
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.collections.HashMap
 
 class SCCacheBuildFeature(dispatcher: EventDispatcher<AgentLifeCycleListener>) : AgentLifeCycleAdapter() {
     companion object {
@@ -91,7 +90,7 @@ class SCCacheBuildFeature(dispatcher: EventDispatcher<AgentLifeCycleListener>) :
             }
             try {
                 servers[runningBuild.buildId] = server
-                server.start(logger)
+                server.start(logger, runningBuild)
                 logger.message("Server successfully started on port ${settings.port}")
             } catch (e: Exception) {
                 logger.error("Failed to start server on port ${settings.port}: " + e.message)
@@ -110,6 +109,7 @@ class SCCacheBuildFeature(dispatcher: EventDispatcher<AgentLifeCycleListener>) :
         logger.activity("Stopping sccache server", BuildFeatureSettings.FEATURE_TYPE) {
             server.reportStatistics(logger)
             server.stop(logger)
+            server.publishLog(logger)
         }
     }
 

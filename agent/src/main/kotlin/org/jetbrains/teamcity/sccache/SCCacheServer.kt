@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2020 JetBrains s.r.o.
+ * Copyright 2000-2023 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,17 @@ import com.google.gson.JsonPrimitive
 import com.intellij.execution.configurations.GeneralCommandLine
 import jetbrains.buildServer.ExecResult
 import jetbrains.buildServer.SimpleCommandLineProcessRunner
+import jetbrains.buildServer.agent.AgentRunningBuild
 import jetbrains.buildServer.agent.BuildProgressLogger
 import jetbrains.buildServer.messages.serviceMessages.BuildStatisticValue
+import jetbrains.buildServer.messages.serviceMessages.PublishArtifacts
 import jetbrains.buildServer.util.FileUtil
 import org.jetbrains.teamcity.sccache.SCCacheConstants.BuildFeatureSettings.FEATURE_TYPE
+import java.io.File
 
 class SCCacheServer(private val settings: SCCacheBuildFeatureSettings, private val executable: String) {
+    private var logFile: File? = null
+
     fun reportStatistics(logger: BuildProgressLogger) {
         // invoke 'sccache -s --stats-format json'
         // parse json
@@ -68,7 +73,7 @@ class SCCacheServer(private val settings: SCCacheBuildFeatureSettings, private v
         }
     }
 
-    fun start(logger: BuildProgressLogger) {
+    fun start(logger: BuildProgressLogger, runningBuild: AgentRunningBuild) {
         // invoke 'sccache --start-server' with all necessary env variables
 
         val env = HashMap<String, String>()
@@ -76,6 +81,17 @@ class SCCacheServer(private val settings: SCCacheBuildFeatureSettings, private v
         env["SCCACHE_IDLE_TIMEOUT"] = "0"
         env["SCCACHE_SERVER_PORT"] = settings.port.toString()
         settings.backendConfig?.let { env.putAll(it.getEnv()) }
+
+        val loggingLevel = runningBuild.sharedConfigParameters[SCCacheConstants.SCCACHE_SERVER_LOGGING_LEVEL]
+                ?: runningBuild.agentConfiguration.configurationParameters[SCCacheConstants.SCCACHE_SERVER_LOGGING_LEVEL]
+        if (!loggingLevel.isNullOrBlank()) {
+            env["SCCACHE_LOG"] = loggingLevel
+            // buildTempDirectory is not existing yet
+            // neither is agentTempDirectory
+            logFile = File(runningBuild.agentTempDirectory.absoluteFile.parent, "globalTmp/sccache-server-${runningBuild.buildId}.log")
+            env["SCCACHE_ERROR_LOG"] = logFile!!.absolutePath
+        }
+
 
         logger.message("Using env variables: ${env.toSortedMap()}")
 
@@ -95,6 +111,11 @@ class SCCacheServer(private val settings: SCCacheBuildFeatureSettings, private v
         val result = run(null, "--stop-server")
         if (ignoreErrors) return
         if (reportFailures(result, logger)) return
+    }
+
+    fun publishLog(logger: BuildProgressLogger) {
+        val file = logFile ?: return
+        logger.message(PublishArtifacts("+:${file.absolutePath} => .").asString())
     }
 
     private fun run(environment: Map<String, String>? = null, vararg args: String): ExecResult {
