@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2020 JetBrains s.r.o.
+ * Copyright 2000-2023 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@ apply plugin: 'java'
 apply plugin: 'com.github.rodm.teamcity-agent'
 
 dependencies {
-    compile(project(':common'))
+    implementation(project(':common'))
 
     testImplementation(testFixtures(project(':common')))
-    testCompile "org.jetbrains.teamcity:tests-support:$teamcity_version"
+    testImplementation "org.jetbrains.teamcity:tests-support:$teamcity_version"
 }
 
 teamcity {
@@ -37,4 +37,4 @@ teamcity {
 }
 
 // Do not include version into plugin archive name
-project.tasks.getByName('agentPlugin').version = ''
+project.tasks.getByName('agentPlugin').archiveVersion = ''

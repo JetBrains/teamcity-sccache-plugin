@@ -1,5 +1,5 @@
 /*
- * Copyright 2000-2020 JetBrains s.r.o.
+ * Copyright 2000-2023 JetBrains s.r.o.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ subprojects {
     }
 
     dependencies {
-        compile("org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}".toString())
     }
     if (System.getenv('TEAMCITY_VERSION') != null) {
         test.ignoreFailures = true
@@ -73,6 +73,6 @@ subprojects {
 }
 
 wrapper {
-    gradleVersion = '6.7'
+    gradleVersion = '7.6.1'
     distributionUrl = "https://cache-redirector.jetbrains.com/services.gradle.org/distributions/gradle-${gradleVersion}-bin.zip"
 }
