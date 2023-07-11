@@ -68,8 +68,9 @@ class SCCacheBuildFeature(dispatcher: EventDispatcher<AgentLifeCycleListener>) :
 
         internal fun getVersionFromOutput(stdout: String): String? {
             val line = stdout.lines().firstOrNull { it.isNotBlank() } ?: return null
-            val find = "(?:[0-9]+\\.)*[0-9]+".toRegex().find(line) ?: return null
-            return find.value
+            val version = line.lowercase().removePrefix("sccache").trim()
+            return if (version.matches("[0-9]+\\..*".toRegex())) version
+            else null
         }
     }
 
