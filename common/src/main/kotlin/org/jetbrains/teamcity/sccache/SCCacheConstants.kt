@@ -18,6 +18,7 @@ package org.jetbrains.teamcity.sccache
 @Suppress("MayBeConstant")
 object SCCacheConstants {
     val AGENT_SCCACHE_PATH_PARAMETER = "sccache.path"
+    val AGENT_SCCACHE_VERSION_PARAMETER = "sccache.version"
     val SCCACHE_SERVER_LOGGING_LEVEL = "sccache.logging.level"
 
     object BuildFeatureSettings {

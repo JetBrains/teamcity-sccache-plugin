@@ -70,6 +70,10 @@ subprojects {
     if (System.getenv('TEAMCITY_VERSION') != null) {
         test.ignoreFailures = true
     }
+
+    test {
+        useTestNG()
+    }
 }
 
 wrapper {

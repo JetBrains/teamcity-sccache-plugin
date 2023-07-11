@@ -15,9 +15,11 @@
  */
 package org.jetbrains.teamcity.sccache
 
+import com.intellij.execution.configurations.GeneralCommandLine
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.util.SystemInfo
 import jetbrains.buildServer.NetworkUtil
+import jetbrains.buildServer.SimpleCommandLineProcessRunner
 import jetbrains.buildServer.agent.*
 import jetbrains.buildServer.log.Loggers
 import jetbrains.buildServer.util.EventDispatcher
@@ -31,6 +33,44 @@ import java.util.concurrent.ConcurrentHashMap
 class SCCacheBuildFeature(dispatcher: EventDispatcher<AgentLifeCycleListener>) : AgentLifeCycleAdapter() {
     companion object {
         val LOG = Logger.getInstance(Loggers.AGENT_CATEGORY + "." + SCCacheBuildFeature::class.java.name)!!
+
+        private fun findExecutableInPath(): String? {
+            val name = "sccache"
+            val path = when {
+                SystemInfo.isWindows -> System.getenv("Path")
+                SystemInfo.isUnix -> System.getenv("PATH")
+                else -> System.getenv("PATH") ?: System.getenv("Path")
+            } ?: return null
+            val suffix = if (SystemInfo.isWindows) ".exe" else ""
+
+            val st = StringTokenizer(path, File.pathSeparator)
+            while (st.hasMoreTokens()) {
+                val token = st.nextToken()
+
+                val file = File(token, name + suffix)
+                if (file.exists() && file.isFile) {
+                    return FileUtil.getCanonicalFile(file).path
+                }
+            }
+            return null
+        }
+
+        internal fun getVersion(path: String): String? {
+            val cl = GeneralCommandLine()
+            cl.exePath = FileUtil.toSystemDependentName(path)
+            cl.addParameter("--version")
+            cl.envParams = HashMap()
+            val result = SimpleCommandLineProcessRunner.runCommand(cl, null)
+            if (result.exception != null) return null
+            if (result.exitCode != 0) return null
+            return getVersionFromOutput(result.stdout)
+        }
+
+        internal fun getVersionFromOutput(stdout: String): String? {
+            val line = stdout.lines().firstOrNull { it.isNotBlank() } ?: return null
+            val find = "(?:[0-9]+\\.)*[0-9]+".toRegex().find(line) ?: return null
+            return find.value
+        }
     }
 
     init {
@@ -48,6 +88,10 @@ class SCCacheBuildFeature(dispatcher: EventDispatcher<AgentLifeCycleListener>) :
         val path = findExecutableInPath()
         if (!path.isNullOrBlank()) {
             agent.configuration.addConfigurationParameter(SCCacheConstants.AGENT_SCCACHE_PATH_PARAMETER, path)
+            val version = getVersion(path)
+            if (!version.isNullOrBlank()) {
+                agent.configuration.addConfigurationParameter(SCCacheConstants.AGENT_SCCACHE_VERSION_PARAMETER, version)
+            }
         }
     }
 
@@ -117,25 +161,4 @@ class SCCacheBuildFeature(dispatcher: EventDispatcher<AgentLifeCycleListener>) :
         servers.remove(build.buildId)
     }
 
-
-    private fun findExecutableInPath(): String? {
-        val name = "sccache"
-        val path = when {
-            SystemInfo.isWindows -> System.getenv("Path")
-            SystemInfo.isUnix -> System.getenv("PATH")
-            else -> System.getenv("PATH") ?: System.getenv("Path")
-        }
-        val suffix = if (SystemInfo.isWindows) ".exe" else ""
-
-        val st = StringTokenizer(path, File.pathSeparator)
-        while (st.hasMoreTokens()) {
-            val token = st.nextToken()
-
-            val file = File(token, name + suffix)
-            if (file.exists() && file.isFile) {
-                return FileUtil.getCanonicalFile(file).path
-            }
-        }
-        return null
-    }
 }
